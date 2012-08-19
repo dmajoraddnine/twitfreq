@@ -20,6 +20,7 @@ wordHash = {}
 tweetsGotten = 0
 outputFile = open( 'twitfreq-output-%s.txt' % handle, 'w' )
 
+#gather words into hash
 while tweetsGotten < 1000:
 	print( 'Getting new tweets...(%d gotten so far)' % tweetsGotten )
 	
