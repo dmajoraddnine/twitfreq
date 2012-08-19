@@ -1,7 +1,6 @@
 import sys, urllib.request, urllib.parse, json, re, operator
 
 if len(sys.argv) < 2:
-	#sys.exit('Usage: \'python %s [--includeRetweets] [--includeReplies] [twitterHandle]\'' % sys.argv[0]) (deal with this later)
 	sys.exit( 'Usage: \'python %s [twitterHandle]\'' % sys.argv[0] )
 else:
 	handle = sys.argv[1]
