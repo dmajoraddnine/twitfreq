@@ -8,7 +8,7 @@ else:
 
 #tokenizes a tweet and adds the words to a hashtable (dict), then returns the lower tweet ID between the sentinel and the current tweet ID
 def processTweet( tweet, hash, lowestID ):
-	cleanText = re.sub( '[!?,.]', '', tweet['text'] ) #strip punctuation that would interfere with hashing
+	cleanText = re.sub( '[!?,.-/=+&]', '', tweet['text'] ) #strip punctuation that would interfere with hashing
 	tokens = cleanText.split()
 	for t in tokens:
 		try:
@@ -39,7 +39,7 @@ while tweetsGotten < 1000:
 		print( 'HTTP Error!\n Code=%d\nMessage=%s\nHeaders=%s' % ( error.code, error.msg, error.hdrs ) )
 		sys.exit()
 	headers = dict( response.info() )
-	print( 'Request successful! Length=%s, Requests Remaining=%s' % ( headers['Content-Length'], headers['X-RateLimit-Remaining'] ) )
+	print( 'Request successful! Length=%s, API Requests Remaining=%s' % ( headers['Content-Length'], headers['X-RateLimit-Remaining'] ) )
 	try:
 		content = response.read()
 		utfContent = content.decode( 'utf8' )
@@ -58,6 +58,10 @@ while tweetsGotten < 1000:
 			tweetsGotten += 1
 			
 #sort the dict and output results
-print( wordHash.popitem() )
 for w in ( sorted( wordHash.items(), key=operator.itemgetter( 1 ), reverse=True ) ):
-	outputFile.write( '%s\n' % w[0].encode( 'ascii', 'ignore' ) )
+	try:
+		outputFile.write( '%s\n' % w[0] )
+	except UnicodeEncodeError:
+		outputFile.write( '%s\n' % w[0].encode( 'ascii', 'ignore' ) )
+		
+print( 'twitfreq.py -- output complete!' )
