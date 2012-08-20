@@ -7,7 +7,7 @@ else:
 
 #tokenizes a tweet and adds the words to a hashtable (dict), then returns the lower tweet ID between the sentinel and the current tweet ID
 def processTweet( tweet, hash, lowestID ):
-	cleanText = re.sub( '[!?,.-/=+&]', '', tweet['text'] ) #strip punctuation that would interfere with hashing
+	cleanText = re.sub( '[!?,.-/=+&|"]', '', tweet['text'] ) #strip punctuation that would interfere with hashing
 	tokens = cleanText.split()
 	for t in tokens:
 		try:
@@ -18,7 +18,7 @@ def processTweet( tweet, hash, lowestID ):
 
 wordHash = {}
 tweetsGotten = 0
-outputFile = open( 'twitfreq-output-%s.txt' % handle, 'w' )
+outputFile = open( 'twitfreq-output-%s.txt' % handle, 'w', encoding='utf8' )
 
 #gather words into hash
 while tweetsGotten < 1000:
@@ -41,11 +41,10 @@ while tweetsGotten < 1000:
 	headers = dict( response.info() )
 	print( 'Request successful! Length=%s, API Requests Remaining=%s' % ( headers['Content-Length'], headers['X-RateLimit-Remaining'] ) )
 	try:
-		content = response.read()
-		utfContent = content.decode( 'utf8' )
-		data = json.loads( utfContent )
+		content = response.read().decode( 'utf8' )
+		data = json.loads( content )
 	except:
-		sys.exit( 'Uh oh!  Error parsing JSON.\ncontent=%s\nutfContent=%s\ndata=%s' % ( content, utfContent, data ) )
+		sys.exit( 'Uh oh!  Error parsing JSON.\ncontent=%s\ndata=%s' % ( content, data ) )
 	
 	#process tweets -- tokenize then hash
 	for tweet in data:
@@ -59,9 +58,6 @@ while tweetsGotten < 1000:
 			
 #sort the dict and output results
 for w in ( sorted( wordHash.items(), key=operator.itemgetter( 1 ), reverse=True ) ):
-	try:
-		outputFile.write( '%s\n' % w[0] )
-	except UnicodeEncodeError:
-		outputFile.write( '%s\n' % w[0].encode( 'ascii', 'ignore' ) )
+	outputFile.write( '%s\n' % w[0] )
 		
 print( 'twitfreq.py -- output complete!' )
